@@ -1,0 +1,112 @@
+import torch
+import torch.nn as nn
+from torch.utils.data import Dataset, DataLoader
+from torchvision import transforms
+from PIL import Image
+import os
+
+from spikingjelly.activation_based import functional, neuron, layer
+
+
+# -------------------- 1. 极简网络（类似MNIST） --------------------
+class SimpleSNN(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.net = nn.Sequential(
+            layer.Flatten(),
+            layer.Linear(28 * 28, 128),  # 隐藏层
+            neuron.LIFNode(tau=2.0),
+            layer.Linear(128, 3),  # 3类输出
+            neuron.LIFNode(tau=2.0)
+        )
+
+    def forward(self, x):
+        return self.net(x)
+
+
+# -------------------- 2. 数据集类（和之前一样） --------------------
+class CarDataset(Dataset):
+    def __init__(self, root_dir, transform=None):
+        self.images = []
+        self.labels = []
+        self.transform = transform
+        self.class_to_idx = {'left': 0, 'right': 1, 'straight': 2}
+
+        for class_name in ['left', 'right', 'straight']:
+            class_dir = os.path.join(root_dir, class_name)
+            if not os.path.exists(class_dir):
+                continue
+            for img_name in os.listdir(class_dir):
+                if img_name.endswith(('.png', '.jpg', '.jpeg')):
+                    self.images.append(os.path.join(class_dir, img_name))
+                    self.labels.append(self.class_to_idx[class_name])
+        print(f"加载了 {len(self.images)} 张28x28图片")
+
+    def __len__(self):
+        return len(self.images)
+
+    def __getitem__(self, idx):
+        img = Image.open(self.images[idx]).convert('L')
+        if self.transform:
+            img = self.transform(img)
+        return img, self.labels[idx]
+
+
+# -------------------- 3. 训练 --------------------
+def train():
+    device = torch.device('cpu')
+    batch_size = 64
+    epochs = 50
+    lr = 0.001
+    T = 16  # 时间步
+
+    transform = transforms.Compose([
+        transforms.ToTensor(),  # 直接转Tensor，值范围[0,1]
+    ])
+
+    train_dataset = CarDataset('my_car_data_28/train', transform=transform)
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+
+    net = SimpleSNN().to(device)
+    print(net)
+
+    criterion = nn.CrossEntropyLoss()
+    optimizer = torch.optim.Adam(net.parameters(), lr=lr)
+
+    for epoch in range(epochs):
+        correct = 0
+        total = 0
+        for img, label in train_loader:
+            img = img.to(device)
+            label = label.to(device)
+
+            # 重复T个时间步
+            img_seq = img.unsqueeze(0).repeat(T, 1, 1, 1, 1)  # [T, batch, C, H, W]
+
+            out_sum = 0
+            for t in range(T):
+                out = net(img_seq[t])
+                out_sum += out
+
+            loss = criterion(out_sum, label)
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+            functional.reset_net(net)
+
+            _, predicted = out_sum.max(1)
+            total += label.size(0)
+            correct += predicted.eq(label).sum().item()
+
+        acc = 100. * correct / total
+        print(f'Epoch {epoch + 1:2d} 准确率: {acc:.2f}%')
+        if acc > 95:
+            print("达到95%准确率，停止训练")
+            break
+
+    torch.save(net.state_dict(), 'car_snn_28x28.pth')
+    print("模型已保存")
+
+
+if __name__ == '__main__':
+    train()

@@ -1,0 +1,36 @@
+﻿# Python 虚拟环境
+.venv/
+.venv39/
+venv/
+env/
+
+# 缓存文件
+__pycache__/
+*.pyc
+*.pyo
+
+# IDE 配置
+.idea/
+.vscode/
+
+# 训练模型和权重文件（这些很大，坚决不上传）
+*.pth
+*.pt
+*.h5
+*.pb
+
+# 数据文件
+*.npy
+*.npz
+logs/
+data/
+my_car_data/
+my_car_data_28/
+260417_real_data/
+260427_real_data_split/
+test_small_data/
+car_20260417_dataset/
+
+# 系统和其他
+*.exe
+.DS_Store
