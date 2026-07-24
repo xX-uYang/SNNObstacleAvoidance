@@ -1,9 +1,15 @@
+import sys
+from pathlib import Path
+PROJECT_ROOT = Path(__file__).parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
 # train_conv_snn_color.py
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
-from conv_snn_28 import ConvSNN28          # 导入已经修改为3通道的网络
-from dataset_color import CarDatasetColor   # 导入刚刚创建的数据集类
+from core.conv_snn_28 import ConvSNN28          # 导入已经修改为3通道的网络
+from core.dataset_color import CarDatasetColor   # 导入刚刚创建的数据集类
 from spikingjelly.activation_based import functional
 
 def train():

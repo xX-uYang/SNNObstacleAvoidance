@@ -1,9 +1,15 @@
+import sys
+from pathlib import Path
+PROJECT_ROOT = Path(__file__).parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
 # overfit_test.py
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader, Subset
-from advanced_snn import AdvancedSNN
-from dataset_general import CarDatasetGeneral
+from core.advanced_snn import AdvancedSNN
+from core.dataset_general import CarDatasetGeneral
 from spikingjelly.activation_based import functional
 
 data_root = "D:/SNN/260417_real_data/train"   # 修改为实际路径

@@ -1,7 +1,13 @@
+import sys
+from pathlib import Path
+PROJECT_ROOT = Path(__file__).parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
 # evaluate_single.py
 import torch
-from dataset_general import CarDatasetGeneral
-from advanced_snn import AdvancedSNN
+from core.dataset_general import CarDatasetGeneral
+from core.advanced_snn import AdvancedSNN
 from spikingjelly.activation_based import functional
 
 def evaluate():

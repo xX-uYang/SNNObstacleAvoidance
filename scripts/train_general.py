@@ -1,8 +1,15 @@
+import sys
+from pathlib import Path
+PROJECT_ROOT = Path(__file__).parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+# train_general.py
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
-from advanced_snn import AdvancedSNN
-from dataset_aug import CarDatasetAug   # 导入增强版
+from core.flexible_conv_snn import FlexibleConvSNN
+from core.dataset_general import CarDatasetGeneral
 from spikingjelly.activation_based import functional
 
 def train():
@@ -10,29 +17,30 @@ def train():
     print(f'Using device: {device}')
 
     # ====== 配置区域 ======
-    img_size = (28, 28)
-    in_channels = 1
+    img_size = (28, 28)  # 图片尺寸（与数据一致）
+    in_channels = 1  # 灰度图，通道数为1
     num_classes = 3
     batch_size = 32
-    T = 16
+    T = 16  # 时间步
     epochs = 30
     lr = 0.01
     v_threshold = 0.5
     tau = 2.0
-    hidden_channels = [16, 32]
-    data_root = 'my_car_data_28/train'
-    model_save_path = 'advanced_snn_aug_28.pth'
+    data_root = 'my_car_data_28/train'  # 你的数据路径
+    model_save_path = 'flexible_snn_28.pth'
     # ======================
 
-    dataset = CarDatasetAug(data_root, img_size=img_size, in_channels=in_channels)  # 使用增强数据集
-    loader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
+    # 数据集
+    train_dataset = CarDatasetGeneral(data_root, img_size=img_size, in_channels=in_channels)
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=0)
 
-    net = AdvancedSNN(
+    # 网络
+    net = FlexibleConvSNN(
         num_classes=num_classes,
         in_channels=in_channels,
         img_h=img_size[0],
         img_w=img_size[1],
-        hidden_channels=hidden_channels,
+        time_step=T,
         v_threshold=v_threshold,
         tau=tau
     ).to(device)
@@ -47,15 +55,20 @@ def train():
         total = 0
         total_loss = 0
 
-        for imgs, labels in loader:
-            imgs, labels = imgs.to(device), labels.to(device)
+        for imgs, labels in train_loader:
+            imgs = imgs.to(device)
+            labels = labels.to(device)
+
+            # 时间步展开
             imgs_seq = imgs.unsqueeze(0).repeat(T, 1, 1, 1, 1)
 
             out_sum = 0
             for t in range(T):
-                out_sum += net(imgs_seq[t])
+                out = net(imgs_seq[t])
+                out_sum += out
 
             loss = criterion(out_sum, labels)
+
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
@@ -66,12 +79,12 @@ def train():
             total += labels.size(0)
             correct += predicted.eq(labels).sum().item()
 
-        avg_loss = total_loss / len(loader)
+        avg_loss = total_loss / len(train_loader)
         acc = 100. * correct / total
         print(f'Epoch {epoch+1:2d} | Loss: {avg_loss:.4f} | Acc: {acc:.2f}%')
 
         if acc > 95:
-            print("准确率超过95%，停止训练")
+            print("提前停止")
             break
 
     torch.save(net.state_dict(), model_save_path)

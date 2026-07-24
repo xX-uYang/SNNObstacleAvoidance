@@ -1,3 +1,9 @@
+import sys
+from pathlib import Path
+PROJECT_ROOT = Path(__file__).parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
 # train_car_snn_28x28_conv.py (你可以重命名)
 import torch
 import torch.nn as nn
@@ -9,7 +15,7 @@ import os
 from spikingjelly.activation_based import functional, neuron, layer
 
 # ----- 导入新网络（从 conv_snn_28.py 导入）-----
-from conv_snn_28 import ConvSNN28
+from core.conv_snn_28 import ConvSNN28
 
 # ----- 数据集类（保持不变）-----
 class CarDataset(Dataset):

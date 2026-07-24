@@ -1,32 +1,40 @@
+import sys
+from pathlib import Path
+PROJECT_ROOT = Path(__file__).parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
-from advanced_snn import AdvancedSNN
-from dataset_general import CarDatasetGeneral
+from core.advanced_snn import AdvancedSNN
+from core.dataset_general import CarDatasetGeneral
 from spikingjelly.activation_based import functional
+from core.config_small import Config
 
 def train():
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f'Using device: {device}')
 
-    # ====== 配置区域（针对现有28x28灰度数据）=======
-    img_size = (28, 28)
-    in_channels = 1
-    num_classes = 3
-    batch_size = 32
-    T = 16
-    epochs = 30
-    lr = 0.01
-    v_threshold = 0.5
-    tau = 2.0
-    hidden_channels = [16, 32]          # 28x28 用两层卷积就够了，否则尺寸会消失
-    data_root = 'my_car_data_28/train'
-    model_save_path = 'advanced_snn_28.pth'
-    # ===========================================
+    # 从配置读取参数
+    img_size = Config.IMG_SIZE
+    in_channels = Config.IN_CHANNELS
+    num_classes = Config.NUM_CLASSES
+    batch_size = Config.BATCH_SIZE
+    T = Config.T
+    epochs = Config.EPOCHS
+    lr = Config.LR
+    v_threshold = Config.V_THRESHOLD
+    tau = Config.TAU
+    hidden_channels = Config.HIDDEN_CHANNELS
+    data_root = Config.DATA_ROOT
+    model_save_path = 'small_model.pth'
 
+    # 加载数据集
     dataset = CarDatasetGeneral(data_root, img_size=img_size, in_channels=in_channels)
     loader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
+    # 创建网络
     net = AdvancedSNN(
         num_classes=num_classes,
         in_channels=in_channels,
@@ -41,6 +49,7 @@ def train():
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(net.parameters(), lr=lr)
 
+    best_acc = 0.0
     for epoch in range(epochs):
         net.train()
         correct = 0
@@ -70,12 +79,16 @@ def train():
         acc = 100. * correct / total
         print(f'Epoch {epoch+1:2d} | Loss: {avg_loss:.4f} | Acc: {acc:.2f}%')
 
-        if acc > 95:
-            print("准确率超过95%，停止训练")
+        # 保存最佳模型
+        if acc > best_acc:
+            best_acc = acc
+            torch.save(net.state_dict(), model_save_path)
+            print(f'  -> 保存最佳模型，准确率 {best_acc:.2f}%')
+        if acc >= 100.0:
+            print('训练准确率已达100%，停止训练')
             break
 
-    torch.save(net.state_dict(), model_save_path)
-    print(f"模型已保存为 {model_save_path}")
+    print(f'训练结束，最佳准确率: {best_acc:.2f}%')
 
 if __name__ == '__main__':
     train()

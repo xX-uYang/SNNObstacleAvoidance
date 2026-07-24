@@ -1,5 +1,11 @@
+import sys
+from pathlib import Path
+PROJECT_ROOT = Path(__file__).parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
 import torch
-from conv_snn_28 import ConvSNN28
+from core.conv_snn_28 import ConvSNN28
 from PIL import Image
 from torchvision import transforms
 

@@ -1,6 +1,12 @@
+import sys
+from pathlib import Path
+PROJECT_ROOT = Path(__file__).parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
 # test_inference.py
 import torch
-from flexible_conv_snn import FlexibleConvSNN
+from core.flexible_conv_snn import FlexibleConvSNN
 from PIL import Image
 from torchvision import transforms
 import argparse
