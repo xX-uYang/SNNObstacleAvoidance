@@ -1,0 +1,30 @@
+{
+  "accuracy": 0.5454545454545454,
+  "balanced_accuracy": 0.5659498207885304,
+  "confusion_matrix": [
+    [
+      2,
+      12,
+      17
+    ],
+    [
+      0,
+      27,
+      0
+    ],
+    [
+      3,
+      8,
+      19
+    ]
+  ],
+  "class_order": [
+    "left",
+    "straight",
+    "right"
+  ],
+  "samples": 88,
+  "recall_left": 0.06451612903225806,
+  "recall_straight": 1.0,
+  "recall_right": 0.6333333333333333
+}
