@@ -1,0 +1,15 @@
+{
+  "checkpoint": "E:\\Intuition\\runs\\ann_image_v1\\best.pt",
+  "image": "E:\\Intuition\\carla_data\\straight\\STRAIGHT_2297_20260404_030659_042573.png",
+  "device": "cuda",
+  "batch_size": 1,
+  "warmup": 20,
+  "repeats": 100,
+  "scope": "model_forward_only_preprocessed_input",
+  "mean_ms": 4.049172000000016,
+  "p50_ms": 3.638499999999878,
+  "p95_ms": 4.892464999999913,
+  "p99_ms": 5.0541130000000365,
+  "min_ms": 3.495000000000026,
+  "max_ms": 5.1544000000003365
+}

@@ -1,0 +1,7 @@
+std_msgs/Header header
+uint64 frame_id
+float32 left_probability
+float32 straight_probability
+float32 right_probability
+float32 inference_latency_ms
+string model_version
