@@ -1,0 +1,36 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+
+# CARLA capture outputs
+output/
+**/output/
+episode_*/
+*.jsonl
+
+# Large generated media
+*.png
+*.jpg
+*.jpeg
+*.mp4
+*.avi
+
+# CARLA binaries and packaged assets
+Engine/
+CarlaUE4/
+*.pak
+*.egg
+
+# Environments and tools
+.venv/
+venv/
+.conda/
+.vscode/
+.idea/
+
+# Operating system and temporary files
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
