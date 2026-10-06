@@ -1,36 +1,116 @@
-# Python cache
+# ============================================================
+# SNNObstacleAvoidance —— 仓库根目录忽略规则
+# 合并自：ANN 分支（重构版）/ master 分支（SNN）/ Carla 分支（数据采集）
+# 原则：大二进制、数据集、缓存、凭据一律不入库。
+# 注意：本文件不含 BOM，路径分隔符统一用 /。
+# ============================================================
+
+# ---------- Python 缓存 / 构建产物 ----------
 __pycache__/
 *.py[cod]
-*.pyo
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+*.egg
 
-# CARLA capture outputs
+# ---------- 虚拟环境 ----------
+.venv/
+.venv39/
+venv/
+env/
+ENV/
+.conda/
+
+# ---------- 模型权重与部署产物（很大，坚决不上传）----------
+*.pt
+*.pth
+*.ckpt
+*.onnx
+*.engine
+*.trt
+*.h5
+*.pb
+*.tflite
+runs/**/*.pt
+runs/**/*.pth
+
+# ---------- 数据集 / 图片 / 压缩包 ----------
+carla_data/
+PythonAPI/examples/output/
+/data/
+my_car_data/
+my_car_data_28/
+260417_real_data/
+260427_real_data_split/
+test_small_data/
+car_20260417_dataset/
+data/**/*.png
+data/**/*.jpg
+data/**/*.jpeg
+data/**/*.bmp
+data/**/*.webp
+data/**/*.mp4
+data/**/*.avi
+*.npy
+*.npz
+*.zip
+*.tar
+*.tar.gz
+*.7z
+*.pak
+
+# ---------- CARLA 采集产物与运行时依赖（Carla 分支约定）----------
 output/
 **/output/
 episode_*/
 *.jsonl
+Engine/
+CarlaUE4/
 
-# Large generated media
+# ---------- 生成的媒体文件（本仓库不需要入库任何图片/视频）----------
 *.png
 *.jpg
 *.jpeg
 *.mp4
 *.avi
 
-# CARLA binaries and packaged assets
-Engine/
-CarlaUE4/
-*.pak
-*.egg
+# ---------- 凭据 / 密钥 / 安全红线（绝对不提交）----------
+.env
+.env.*
+*.env
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa*
+id_ed25519*
+.netrc
+credentials.*
+secrets.*
+*.token
+token.json
+*service-account*.json
+kaggle.json
 
-# Environments and tools
-.venv/
-venv/
-.conda/
-.vscode/
+# ---------- 日志 / 临时文件 ----------
+*.log
+logs/
+_tmp/
+tmp/
+*.tmp
+*.bak
+*.orig
+*.rej
+
+# ---------- 编辑器 / 操作系统 ----------
 .idea/
-
-# Operating system and temporary files
+.vscode/
+*.swp
 .DS_Store
 Thumbs.db
-*.log
-*.tmp
+desktop.ini
+*.exe
