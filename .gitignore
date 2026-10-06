@@ -1,0 +1,88 @@
+# ============================================================
+# SNNObstacleAvoidance —— 仓库根目录忽略规则
+# 原则：二进制大文件、数据集、缓存、凭据一律不入库。
+# ============================================================
+
+# ---------- Python 缓存 / 构建产物 ----------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# ---------- 虚拟环境 ----------
+.venv/
+.venv39/
+venv/
+env/
+ENV/
+.conda/
+
+# ---------- 模型权重与部署产物（很大，坚决不上传） ----------
+*.pt
+*.pth
+*.ckpt
+*.onnx
+*.engine
+*.trt
+*.h5
+*.pb
+*.tflite
+runs/**/*.pt
+runs/**/*.pth
+
+# ---------- 数据集 / 图像 / 压缩包 ----------
+carla_data/
+data/**/*.png
+data/**/*.jpg
+data/**/*.jpeg
+data/**/*.bmp
+data/**/*.webp
+data/**/*.mp4
+data/**/*.avi
+*.npy
+*.npz
+*.zip
+*.tar
+*.tar.gz
+*.7z
+
+# ---------- 凭据 / 密钥（安全红线，绝不入库） ----------
+.env
+.env.*
+*.env
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa*
+id_ed25519*
+.netrc
+credentials.*
+secrets.*
+*.token
+token.json
+*service-account*.json
+kaggle.json
+
+# ---------- 日志 / 临时文件 ----------
+*.log
+logs/
+_tmp/
+tmp/
+*.tmp
+*.bak
+*.orig
+*.rej
+
+# ---------- 编辑器 / 操作系统 ----------
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+desktop.ini
